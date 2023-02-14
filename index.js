@@ -9,12 +9,17 @@ function initMap() {
   // initialize services
   const geocoder = new google.maps.Geocoder();
   const service = new google.maps.DistanceMatrixService();
+  const iSearch = "ice cream";
+  // i dunno why this isn't working down below here...
+  //   const searchBox = new google.maps.places.SearchBox(iSearch);
+  const doSearch = document.getElementById("search_button");
+
+  doSearch.onclick = function () {
+    alert("BUTTON CLICKED!!!!");
+  };
   // build request
   //   const origin1 = { lat: 55.93, lng: -3.118 };
   const origin1 = { lat: 45.56373, lng: -122.66293 };
-  //   const origin2 = "Greenwich, England";
-  //   const destinationA = "Stockholm, Sweden";
-  //   const destinationB = { lat: 50.087, lng: 14.421 };
   const destinationA = "1615 NE Killingsworth St, Portland, OR 97211";
   const destinationB = "2035 NE Alberta St, Portland, OR 97211";
   const request = {
