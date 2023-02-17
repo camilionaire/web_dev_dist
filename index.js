@@ -2,29 +2,44 @@ function initMap() {
   const bounds = new google.maps.LatLngBounds();
   const markersArray = [];
   const map = new google.maps.Map(document.getElementById("map"), {
-    // center: { lat: 55.53, lng: 9.4 },
-    center: { lat: 45.56, lng: -122.66 },
+    // center: { lat: 45.56, lng: -122.66 }, // pdx
+    center: origin1,
     zoom: 10,
   });
   // initialize services
   const geocoder = new google.maps.Geocoder();
   const service = new google.maps.DistanceMatrixService();
-  const iSearch = "ice cream";
-  // i dunno why this isn't working down below here...
-  //   const searchBox = new google.maps.places.SearchBox(iSearch);
+  searchServ = new google.maps.places.PlacesService(map);
   const doSearch = document.getElementById("search_button");
 
   doSearch.onclick = function () {
     alert("BUTTON CLICKED!!!!");
   };
   // build request
-  //   const origin1 = { lat: 55.93, lng: -3.118 };
-  const origin1 = { lat: 45.56373, lng: -122.66293 };
+  const qRequest = {
+    query: "ice cream",
+    fields: ["name", "geometry", "formatted_adress"],
+  };
+
+  const searchArray = [];
+  searchServ.findPlaceFromQuery(qRequest, (results, status) => {
+    if (status == google.maps.places.PlacesService.OK && results) {
+      for (let i = 0; i < results.length; i++) {
+        // createMarker(results[i]);
+        searchArray.push(results[i].geometry.location);
+      }
+      // map.setCenter(results[0].geometry.location);
+      map.setCenter(origin1);
+    }
+  });
+
+  const origin1 = { lat: 45.56373, lng: -122.66293 }; // my house
   const destinationA = "1615 NE Killingsworth St, Portland, OR 97211";
   const destinationB = "2035 NE Alberta St, Portland, OR 97211";
   const request = {
     origins: [origin1], // took out , origin2
-    destinations: [destinationA, destinationB],
+    // destinations: [destinationA, destinationB],
+    destinations: searchArray,
     travelMode: google.maps.TravelMode.WALKING, // chang from DRIVING
     unitSystem: google.maps.UnitSystem.IMPERIAL, // ch from METRIC
     avoidHighways: false,
