@@ -69,26 +69,51 @@ function initMap() {
     // get distance matrix response
     service.getDistanceMatrix(request).then((response) => {
       // put response
-      document.getElementById("response").innerText = JSON.stringify(
-        response,
-        null,
-        2
-      );
+      // document.getElementById("response").innerText = JSON.stringify(
+      //   response,
+      //   null,
+      //   2
+      // );
 
       // show on map
       const originList = response.originAddresses;
       const destinationList = response.destinationAddresses;
+      const distances = response.rows[0].elements;
+      var aString = "";
+      for (let i = 0; i < destinationList.length; ++i) {
+        aString += destinationList[i] + "\n";
+      }
+      var anotherString = "";
+      for (let i = 0; i < distances.length; ++i) {
+        anotherString +=
+          "text (imp):" +
+          distances[i].distance.text +
+          "\tfeet (val):" +
+          distances[i].distance.value +
+          "\n";
+      }
+      document.getElementById("response").innerText =
+        "\n looked for: \n" +
+        JSON.stringify(qRequest, null, 2) +
+        "\noriginAddresses:  \n" +
+        response.originAddresses[0] +
+        "\n" +
+        "\ndestinationAddresses:" +
+        "\n" +
+        aString +
+        "\nall the distances:\n" +
+        anotherString;
 
       deleteMarkers(markersArray);
 
-      const showGeocodedAddressOnMap = (asDestination) => {
+      const showGeocodedAddressOnMap = (asDestination, i) => {
         const handler = ({ results }) => {
           map.fitBounds(bounds.extend(results[0].geometry.location));
           markersArray.push(
             new google.maps.Marker({
               map,
               position: results[0].geometry.location,
-              label: asDestination ? "D" : "O",
+              label: asDestination ? i.toString() : "O",
             })
           );
         };
@@ -100,12 +125,12 @@ function initMap() {
 
         geocoder
           .geocode({ address: originList[i] })
-          .then(showGeocodedAddressOnMap(false));
+          .then(showGeocodedAddressOnMap(false, i + 1));
 
         for (let j = 0; j < results.length; j++) {
           geocoder
             .geocode({ address: destinationList[j] })
-            .then(showGeocodedAddressOnMap(true));
+            .then(showGeocodedAddressOnMap(true, j + 1));
         }
       }
     });
